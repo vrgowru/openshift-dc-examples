@@ -1,0 +1,103 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  annotations:
+    openshift.io/generated-by: OpenShiftNewApp
+  creationTimestamp: 2018-10-18T17:34:20Z
+  generation: 3
+  labels:
+    app: gogs
+  name: gogs
+  namespace: gvr-gogs
+  resourceVersion: "733618"
+  selfLink: /apis/apps.openshift.io/v1/namespaces/gvr-gogs/deploymentconfigs/gogs
+  uid: 0b82f9e2-d2fc-11e8-9fdf-1663da0de30e
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    app: gogs
+    deploymentconfig: gogs
+  strategy:
+    activeDeadlineSeconds: 21600
+    resources: {}
+    rollingParams:
+      intervalSeconds: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
+      timeoutSeconds: 600
+      updatePeriodSeconds: 1
+    type: Rolling
+  template:
+    metadata:
+      annotations:
+        openshift.io/generated-by: OpenShiftNewApp
+      creationTimestamp: null
+      labels:
+        app: gogs
+        deploymentconfig: gogs
+    spec:
+      containers:
+      - image: wkulhanek/gogs@sha256:8bcc1cb6f938388b288ba1f9cfe1f2fb7f0cd2297c7b4cdd2d88c2224bb99f4d
+        imagePullPolicy: IfNotPresent
+        name: gogs
+        ports:
+        - containerPort: 3000
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /data
+          name: gogs-volume-1
+        - mountPath: /opt/gogs/custom/conf
+          name: config-volume
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - emptyDir: {}
+        name: gogs-volume-1
+      - configMap:
+          defaultMode: 420
+          name: gogs
+        name: config-volume
+  test: false
+  triggers:
+  - type: ConfigChange
+  - imageChangeParams:
+      automatic: true
+      containerNames:
+      - gogs
+      from:
+        kind: ImageStreamTag
+        name: gogs:11.34
+        namespace: gvr-gogs
+      lastTriggeredImage: wkulhanek/gogs@sha256:8bcc1cb6f938388b288ba1f9cfe1f2fb7f0cd2297c7b4cdd2d88c2224bb99f4d
+    type: ImageChange
+status:
+  availableReplicas: 1
+  conditions:
+  - lastTransitionTime: 2018-10-18T17:34:27Z
+    lastUpdateTime: 2018-10-18T17:34:27Z
+    message: Deployment config has minimum availability.
+    status: "True"
+    type: Available
+  - lastTransitionTime: 2018-10-18T19:53:39Z
+    lastUpdateTime: 2018-10-18T19:53:41Z
+    message: replication controller "gogs-2" successfully rolled out
+    reason: NewReplicationControllerAvailable
+    status: "True"
+    type: Progressing
+  details:
+    causes:
+    - type: ConfigChange
+    message: config change
+  latestVersion: 2
+  observedGeneration: 3
+  readyReplicas: 1
+  replicas: 1
+  unavailableReplicas: 0
+  updatedReplicas: 1
